@@ -47,11 +47,14 @@ Classes like `bg-paper`, `text-ink`, `text-ink-soft`, `bg-sage`, `border-sand`,
 
 ## Viewing the example
 
+**Live preview:** <https://samiu1.github.io/japandi-starter/example/> (GitHub
+Pages, always renders the latest `main`).
+
 On github.com, `example/index.html` shows as source code - that's GitHub's
-file view, not the page. To see it rendered, download the file (the download
-button on its page, or clone the repo) and open it in any browser. The tokens
-are inlined, so the single file renders fully styled on its own - no other
-repo files needed.
+file view, not the page. To see it rendered locally, download the file (the
+download button on its page, or clone the repo) and open it in any browser.
+The tokens are inlined, so the single file renders fully styled on its own -
+no other repo files needed.
 
 ## Non-goals
 
