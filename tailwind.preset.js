@@ -1,0 +1,61 @@
+/**
+ * japandi-starter - Tailwind preset
+ * Consumes the same palette/scale as tokens.css.
+ *
+ * Usage:
+ *   // tailwind.config.js
+ *   module.exports = {
+ *     presets: [require('./tailwind.preset.js')],
+ *     content: ['./src/**/*.{html,js,jsx,ts,tsx,vue,svelte}'],
+ *   }
+ *
+ * Colors are literal values (not var() references) so opacity modifiers
+ * like bg-sage/50 keep working. If you edit tokens.css, mirror the change
+ * here - the hex values are the single source of truth duplicated on purpose.
+ */
+
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        paper:   '#F6F3EC',
+        surface: '#FBF9F4',
+        sand:    '#E9E2D3',
+        clay:    '#D3C6B0',
+        stone:   '#A79C89',
+        ink: {
+          DEFAULT: '#2C2823',
+          soft:    '#6B6357',
+        },
+        sage:    '#7C8471',
+        rust:    '#B0795B',
+        border:  '#E2DACB',
+      },
+      fontFamily: {
+        sans:  ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        serif: ['Fraunces', 'Newsreader', 'Georgia', 'serif'],
+      },
+      fontSize: {
+        xs:   ['0.8rem',   { lineHeight: '1.6' }],
+        sm:   ['0.889rem', { lineHeight: '1.6' }],
+        base: ['1rem',     { lineHeight: '1.6' }],
+        lg:   ['1.25rem',  { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+        xl:   ['1.563rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+        '2xl':['1.953rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+        '3xl':['2.441rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+      },
+      borderRadius: {
+        sm: '4px',
+        md: '8px',
+        lg: '16px',
+      },
+      boxShadow: {
+        sm: '0 1px 2px rgba(44, 40, 35, 0.05)',
+        md: '0 4px 12px rgba(44, 40, 35, 0.06)',
+        lg: '0 12px 32px rgba(44, 40, 35, 0.08)',
+      },
+    },
+  },
+  plugins: [],
+};
