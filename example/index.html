@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>japandi-starter - example</title>
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--jpd-paper);
+    color: var(--jpd-ink);
+    font-family: var(--jpd-font-sans);
+    font-size: var(--jpd-text-base);
+    line-height: var(--jpd-leading-body);
+  }
+  main { max-width: 42rem; margin: 0 auto; padding: var(--jpd-space-16) var(--jpd-space-6); }
+  h1 { font-family: var(--jpd-font-serif); font-size: var(--jpd-text-3xl); line-height: var(--jpd-leading-heading); letter-spacing: var(--jpd-tracking-heading); margin: 0 0 var(--jpd-space-3); }
+  h2 { font-size: var(--jpd-text-lg); line-height: var(--jpd-leading-heading); letter-spacing: var(--jpd-tracking-heading); margin: 0 0 var(--jpd-space-4); }
+  .lede { color: var(--jpd-ink-soft); font-size: var(--jpd-text-lg); margin: 0 0 var(--jpd-space-12); }
+  section { margin-bottom: var(--jpd-space-16); }
+  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--jpd-space-3); }
+  .swatch { border-radius: var(--jpd-radius-md); padding: var(--jpd-space-4) var(--jpd-space-3); font-size: var(--jpd-text-xs); border: 1px solid var(--jpd-border); }
+  .swatch .name { font-weight: 600; }
+  .card { background: var(--jpd-surface); border-radius: var(--jpd-radius-md); box-shadow: var(--jpd-shadow-sm); padding: var(--jpd-space-8); margin-bottom: var(--jpd-space-6); }
+  .card p { color: var(--jpd-ink-soft); margin: 0; }
+  .card .label { font-size: var(--jpd-text-xs); font-weight: 600; color: var(--jpd-stone); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 var(--jpd-space-2); }
+  .btn { display: inline-block; border-radius: var(--jpd-radius-md); padding: var(--jpd-space-3) var(--jpd-space-6); font-size: var(--jpd-text-base); border: none; cursor: pointer; margin-right: var(--jpd-space-3); }
+  .btn-primary { background: var(--jpd-sage); color: var(--jpd-paper); }
+  .btn-secondary { background: transparent; border: 1px solid var(--jpd-border); color: var(--jpd-ink); }
+  .type-row { margin-bottom: var(--jpd-space-4); }
+  .type-row .meta { font-size: var(--jpd-text-xs); color: var(--jpd-stone); }
+</style>
+</head>
+<body>
+<main>
+  <section>
+    <h1>Japandi, as a system</h1>
+    <p class="lede">Warm neutrals, quiet contrast, generous whitespace. These are the tokens applied, not a mockup.</p>
+  </section>
+
+  <section>
+    <h2>Palette</h2>
+    <div class="swatches">
+      <div class="swatch" style="background: var(--jpd-paper)"><div class="name">paper</div>#F6F3EC</div>
+      <div class="swatch" style="background: var(--jpd-surface)"><div class="name">surface</div>#FBF9F4</div>
+      <div class="swatch" style="background: var(--jpd-sand)"><div class="name">sand</div>#E9E2D3</div>
+      <div class="swatch" style="background: var(--jpd-clay)"><div class="name">clay</div>#D3C6B0</div>
+      <div class="swatch" style="background: var(--jpd-stone); color: var(--jpd-paper)"><div class="name">stone</div>#A79C89</div>
+      <div class="swatch" style="background: var(--jpd-ink); color: var(--jpd-paper)"><div class="name">ink</div>#2C2823</div>
+      <div class="swatch" style="background: var(--jpd-sage); color: var(--jpd-paper)"><div class="name">sage</div>#7C8471</div>
+      <div class="swatch" style="background: var(--jpd-rust); color: var(--jpd-paper)"><div class="name">rust</div>#B0795B</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Type scale</h2>
+    <div class="type-row" style="font-size: var(--jpd-text-3xl); line-height: 1.2">Display 3xl <span class="meta">2.441rem</span></div>
+    <div class="type-row" style="font-size: var(--jpd-text-2xl); line-height: 1.2">Heading 2xl <span class="meta">1.953rem</span></div>
+    <div class="type-row" style="font-size: var(--jpd-text-xl); line-height: 1.2">Heading xl <span class="meta">1.563rem</span></div>
+    <div class="type-row" style="font-size: var(--jpd-text-lg); line-height: 1.2">Heading lg <span class="meta">1.25rem</span></div>
+    <div class="type-row">Body base <span class="meta">1rem / 1.6 line-height</span></div>
+    <div class="type-row" style="font-size: var(--jpd-text-sm); color: var(--jpd-ink-soft)">Secondary sm <span class="meta">0.889rem</span></div>
+  </section>
+
+  <section>
+    <h2>Components</h2>
+    <div class="card">
+      <p class="label">Card</p>
+      <p>Surface background, 8px radius, a soft warm shadow. Padding does the separating, not borders.</p>
+    </div>
+    <div>
+      <button class="btn btn-primary">Primary action</button>
+      <button class="btn btn-secondary">Secondary</button>
+    </div>
+  </section>
+</main>
+</body>
+</html>
