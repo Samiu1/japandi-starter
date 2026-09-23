@@ -41,6 +41,22 @@ module.exports = {
           DEFAULT: '#E2DACB',
           strong : '#878177',
         },
+        success: {
+          DEFAULT: '#7C8B6C',
+          deep   : '#5C6B4E',
+        },
+        warning: {
+          DEFAULT: '#A8874F',
+          deep   : '#7E5F2C',
+        },
+        danger : {
+          DEFAULT: '#A4695B',
+          deep   : '#8C4A3C',
+        },
+        info   : {
+          DEFAULT: '#8B8574',
+          deep   : '#615C4E',
+        },
       },
       fontFamily: {
         sans : ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],

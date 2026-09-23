@@ -2,25 +2,32 @@
 """Build generated files from tokens.json (the single source of truth).
 
 Reads tokens.json and regenerates:
-  - tokens.css            (:root custom properties)
-  - tailwind.preset.js    (Tailwind v3 preset)
-  - example/index.html    (its inlined :root token block only)
+  - tokens.css            (:root custom properties + [data-theme="dark"] overrides)
+  - tailwind.preset.js    (Tailwind v3 preset, light values only)
+  - tailwind.v4.css       (Tailwind v4 @theme + [data-theme="dark"] overrides)
+  - example/index.html    (its inlined token block and inlined recipes.css)
 
 Usage:  python3 tools/build-tokens.py
 Design decisions live in tokens.json. Presentational rules that live here:
   - Tailwind color nesting: `ink-soft` nests as ink.soft because `ink` exists
-    as a color token; the base becomes DEFAULT. Same for sage-deep/rust-deep
-    and border-strong.
+    as a color token; the base becomes DEFAULT. Same for sage-deep/rust-deep,
+    border-strong, and the feedback deep variants.
   - fontSize line heights: text-xs/sm/base use leading-body; text-lg and up
     use leading-heading + tracking-heading.
   - The preset omits spacing and radius-full: both are identical to Tailwind's
     defaults, so emitting them would be noise.
-  - Tailwind v4 theme (tailwind.v4.css): colors, fonts, type scale, radii,
-    shadows and easings map to @theme namespaces. Motion durations, z-index
-    and focus width/offset have no v4 theme namespace; v4 accepts them as
-    bare values (duration-250, z-100, outline-2), so they are documented
-    rather than emitted. Spacing and radius-full are omitted for the same
-    reason as in the preset.
+  - Tailwind v4 theme (tailwind.v4.css): colors, feedback colors, fonts, type
+    scale, radii, shadows and easings map to @theme namespaces. Motion
+    durations, z-index and focus width/offset have no v4 theme namespace; v4
+    accepts them as bare values (duration-250, z-100, outline-2), so they are
+    documented rather than emitted. Spacing and radius-full are omitted for
+    the same reason as in the preset.
+  - Modes (modes.dark in tokens.json): every color, feedback, and shadow
+    token must define a dark override; the value must be a literal (aliases
+    would resolve against light values). The dark block only emits overridden
+    tokens, so adding a future mode needs no generator changes beyond calling
+    it. The v3 preset stays light-only: its colors are literals so opacity
+    modifiers keep working.
 """
 import json
 import re
@@ -32,17 +39,22 @@ TOKENS_JSON = ROOT / "tokens.json"
 TOKENS_CSS = ROOT / "tokens.css"
 PRESET_JS = ROOT / "tailwind.preset.js"
 V4_CSS = ROOT / "tailwind.v4.css"
+RECIPES_CSS = ROOT / "recipes.css"
 EXAMPLE_HTML = ROOT / "example" / "index.html"
 
 # Presentational order of categories in generated files.
-CATEGORY_ORDER = ["color", "type", "space", "radius", "shadow",
+CATEGORY_ORDER = ["color", "feedback", "type", "space", "radius", "shadow",
                   "motion", "z", "focus"]
+
+# Categories whose tokens must define a value in every mode.
+MODED_CATEGORIES = ["color", "feedback", "shadow"]
 
 CSS_BANNER = """/* ==========================================================================
    japandi-starter - design tokens
    Warm, quiet, natural. Japanese restraint meets Scandinavian warmth.
    GENERATED from tokens.json - do not edit by hand.
    Edit tokens.json, then run: python3 tools/build-tokens.py
+   Dark mode: set data-theme="dark" on <html> to apply the dark overrides.
    ========================================================================== */"""
 
 PRESET_HEADER = """/**
@@ -85,7 +97,46 @@ def load_tokens():
     # fail here, before anything is written.
     for name in flat:
         resolve_literal(flat, flat[name]["value"])
-    return flat, ordered
+    dark = load_mode(data, flat, "dark")
+    return flat, ordered, dark
+
+
+def load_mode(data, flat, mode):
+    """Load and validate modes.<mode>: returns name -> literal override value.
+
+    Every token in a MODED_CATEGORIES category must define an override, and
+    the override must be a literal value: an alias would resolve against the
+    light values, which is never what a mode wants.
+    """
+    modes = data.get("modes", {})
+    if mode not in modes:
+        raise SystemExit(f"modes.{mode} missing in tokens.json")
+    spec = modes[mode]
+    overrides = {}
+    for category, tokens in spec.items():
+        if category.startswith("$"):
+            continue
+        if category not in CATEGORY_ORDER:
+            raise SystemExit(f"modes.{mode}: unknown category '{category}'")
+        for name, token in tokens.items():
+            if name not in flat or flat[name]["category"] != category:
+                raise SystemExit(f"modes.{mode}: unknown token '{category}.{name}'")
+            if not isinstance(token, dict) or "$value" not in token:
+                raise SystemExit(
+                    f"modes.{mode}: '{name}' must be an object with a $value")
+            value = token["$value"]
+            if not value or re.fullmatch(r"\{[\w-]+\.[\w-]+\}", value.strip()):
+                raise SystemExit(
+                    f"modes.{mode}: '{name}' must be a literal value, not an alias")
+            if name in overrides:
+                raise SystemExit(f"modes.{mode}: duplicate override '{name}'")
+            overrides[name] = value
+    missing = [n for n, t in flat.items()
+               if t["category"] in MODED_CATEGORIES and n not in overrides]
+    if missing:
+        raise SystemExit(
+            f"modes.{mode}: missing overrides for {', '.join(sorted(missing))}")
+    return overrides
 
 
 def resolve_literal(flat, value):
@@ -142,8 +193,28 @@ def build_root_block(flat, ordered):
     return "\n".join(lines) + "\n"
 
 
-def build_css(flat, ordered):
-    return CSS_BANNER + "\n\n" + build_root_block(flat, ordered)
+def build_dark_block(flat, ordered, dark):
+    """[data-theme="dark"] override block: only tokens the mode overrides."""
+    overridden = [(c, s, n) for c, s, n in ordered if n in dark]
+    lines = ['[data-theme="dark"] {']
+    current_section = None
+    name_width = max(len(f"  --jpd-{name}:") for _, _, name in overridden)
+    for _, section_title, name in overridden:
+        if section_title != current_section:
+            if current_section is not None:
+                lines.append("")
+            lines.append(f"  /* ---- {section_title} ---- */")
+            current_section = section_title
+        field = f"  --jpd-{name}:".ljust(name_width + 1)
+        lines.append(f"{field}{dark[name]};")
+    lines.append("}")
+    return "\n".join(lines) + "\n"
+
+
+def build_css(flat, ordered, dark):
+    root = build_root_block(flat, ordered)
+    dark_block = build_dark_block(flat, ordered, dark)
+    return CSS_BANNER + "\n\n" + root + "\n" + dark_block
 
 
 def js_key(key):
@@ -151,8 +222,12 @@ def js_key(key):
 
 
 def build_colors(flat, ordered):
-    """Ordered list of (key, value) with nesting for ink/sage/rust/border."""
-    color_names = [n for c, _, n in ordered if c == "color"]
+    """Ordered list of (key, value) with nesting for ink/sage/rust/border.
+
+    Feedback colors nest the same way (success-deep under success) since
+    the nesting is purely name-based.
+    """
+    color_names = [n for c, _, n in ordered if c in ("color", "feedback")]
     nameset = set(color_names)
     subs = {}    # base -> [(subkey, value)]
     order = []
@@ -254,6 +329,9 @@ V4_BANNER = """/* ==============================================================
      z-100, outline-2, outline-offset-2.
    - --ease-out and --ease-in-out intentionally override Tailwind's defaults
      with this system's quieter curves.
+   - Dark mode: set data-theme="dark" on <html>; the override block at the
+     end flips every color and shadow variable. (The v3 preset is light-only:
+     its colors are literals so opacity modifiers keep working.)
    ========================================================================== */"""
 
 
@@ -267,7 +345,7 @@ def v4_value(flat, name):
 
 
 def v4_entries(flat, ordered):
-    """(section, var, value) triples for the @theme block, in order."""
+    """(section, name, var, value) tuples for the @theme block, in order."""
     entries = []
     tmap = {n: flat[n]["value"] for c, _, n in ordered if c == "type"}
     leading_body, leading_heading = tmap["leading-body"], tmap["leading-heading"]
@@ -275,38 +353,38 @@ def v4_entries(flat, ordered):
 
     for category, section_title, name in ordered:
         value = v4_value(flat, name)
-        if category == "color":
-            entries.append((section_title, f"--color-{name}", value))
+        if category in ("color", "feedback"):
+            entries.append((section_title, name, f"--color-{name}", value))
         elif name == "focus-color":
             # Semantic alias: used as outline-focus for focus rings.
-            entries.append((section_title, "--color-focus", value))
+            entries.append((section_title, name, "--color-focus", value))
         elif name in ("font-sans", "font-serif"):
-            entries.append((section_title, f"--font-{name.split('-', 1)[1]}", value))
+            entries.append((section_title, name, f"--font-{name.split('-', 1)[1]}", value))
         elif name.startswith("text-"):
             size = name.split("-", 1)[1]
-            entries.append((section_title, f"--text-{size}", value))
+            entries.append((section_title, name, f"--text-{size}", value))
             if size in ("xs", "sm", "base"):
-                entries.append((section_title, f"--text-{size}--line-height", leading_body))
+                entries.append((section_title, name, f"--text-{size}--line-height", leading_body))
             else:
-                entries.append((section_title, f"--text-{size}--line-height", leading_heading))
-                entries.append((section_title, f"--text-{size}--letter-spacing", tracking_heading))
+                entries.append((section_title, name, f"--text-{size}--line-height", leading_heading))
+                entries.append((section_title, name, f"--text-{size}--letter-spacing", tracking_heading))
         elif category == "radius" and name != "radius-full":
-            entries.append((section_title, f"--radius-{name.split('-', 1)[1]}", value))
+            entries.append((section_title, name, f"--radius-{name.split('-', 1)[1]}", value))
         elif category == "shadow":
-            entries.append((section_title, f"--shadow-{name.split('-', 1)[1]}", value))
+            entries.append((section_title, name, f"--shadow-{name.split('-', 1)[1]}", value))
         elif name in ("ease-out", "ease-in-out"):
-            entries.append((section_title, f"--{name}", value))
+            entries.append((section_title, name, f"--{name}", value))
         # space-*: identical to v4 defaults, omitted (same as the v3 preset).
         # duration-*, z-*, focus-width/offset: bare values in v4, not emitted.
     return entries
 
 
-def build_v4_theme(flat, ordered):
+def build_v4_theme(flat, ordered, dark):
     entries = v4_entries(flat, ordered)
-    var_width = max(len(var) for _, var, _ in entries)
+    var_width = max(len(var) for _, _, var, _ in entries)
     lines = [V4_BANNER, "", "@theme {"]
     current_section = None
-    for section_title, var, value in entries:
+    for section_title, _, var, value in entries:
         if section_title != current_section:
             if current_section is not None:
                 lines.append("")
@@ -314,37 +392,68 @@ def build_v4_theme(flat, ordered):
             current_section = section_title
         lines.append(f"  {var.ljust(var_width)}: {value};")
     lines.append("}")
+    # Dark mode: same variables, flipped values. Unlayered, so it wins over
+    # the @theme output (which Tailwind emits inside @layer theme).
+    var_of = {name: var for _, name, var, _ in entries}
+    dark_entries = [(s, n) for c, s, n in ordered if n in dark and n in var_of]
+    if dark_entries:
+        lines += ["", '[data-theme="dark"] {']
+        current_section = None
+        for section_title, name in dark_entries:
+            if section_title != current_section:
+                if current_section is not None:
+                    lines.append("")
+                lines.append(f"  /* {section_title} */")
+                current_section = section_title
+            lines.append(f"  {var_of[name].ljust(var_width)}: {dark[name]};")
+        lines.append("}")
     return "\n".join(lines) + "\n"
 
 
-def build_example_html(root_block):
+TOKENS_START = "/* BEGIN JPD TOKENS */"
+TOKENS_END = "/* END JPD TOKENS */"
+RECIPES_START = "/* BEGIN JPD RECIPES */"
+RECIPES_END = "/* END JPD RECIPES */"
+
+
+def replace_marked(text, start, end, replacement, what):
+    pattern = re.compile(re.escape(start) + r".*?" + re.escape(end), re.DOTALL)
+    if len(pattern.findall(text)) != 1:
+        raise SystemExit(f"expected exactly 1 {what} block in example, found "
+                         f"{len(pattern.findall(text))}")
+    body = start + "\n" + replacement.rstrip("\n") + "\n" + end
+    return pattern.sub(lambda _: body, text, count=1)
+
+
+def build_example_html(root_block, dark_block):
     html = EXAMPLE_HTML.read_text()
-    pattern = re.compile(r"^:root \{$.*?^}", re.MULTILINE | re.DOTALL)
-    matches = pattern.findall(html)
-    if len(matches) != 1:
-        raise SystemExit(f"expected exactly 1 :root block in example, found {len(matches)}")
-    return pattern.sub(lambda _: root_block.rstrip("\n"), html, count=1)
+    tokens_text = root_block.rstrip("\n") + "\n\n" + dark_block.rstrip("\n")
+    html = replace_marked(html, TOKENS_START, TOKENS_END, tokens_text, "token")
+    recipes_text = RECIPES_CSS.read_text().rstrip("\n")
+    html = replace_marked(html, RECIPES_START, RECIPES_END, recipes_text, "recipe")
+    return html
 
 
 def main():
-    flat, ordered = load_tokens()
+    flat, ordered, dark = load_tokens()
     # Build everything in memory first: files are written only after all
     # outputs (including the example sync) succeed, so a failure never
     # leaves a partially-updated tree behind.
     root_block = build_root_block(flat, ordered)
-    css_text = build_css(flat, ordered)
+    dark_block = build_dark_block(flat, ordered, dark)
+    css_text = build_css(flat, ordered, dark)
     preset_text = build_preset(flat, ordered)
-    v4_text = build_v4_theme(flat, ordered)
-    example_html = build_example_html(root_block)
+    v4_text = build_v4_theme(flat, ordered, dark)
+    example_html = build_example_html(root_block, dark_block)
     TOKENS_CSS.write_text(css_text)
     PRESET_JS.write_text(preset_text)
     V4_CSS.write_text(v4_text)
     EXAMPLE_HTML.write_text(example_html)
-    print(f"tokens: {len(ordered)}")
+    print(f"tokens: {len(ordered)} (+{len(dark)} dark overrides)")
     print(f"wrote {TOKENS_CSS.relative_to(ROOT)}")
     print(f"wrote {PRESET_JS.relative_to(ROOT)}")
     print(f"wrote {V4_CSS.relative_to(ROOT)}")
-    print(f"synced :root block in {EXAMPLE_HTML.relative_to(ROOT)}")
+    print(f"synced token + recipe blocks in {EXAMPLE_HTML.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

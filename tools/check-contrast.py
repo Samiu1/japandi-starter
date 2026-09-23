@@ -2,9 +2,10 @@
 """WCAG contrast check for japandi-starter tokens.
 
 Reads tokens.json (the single source of truth), resolves {category.name}
-aliases, and asserts:
+aliases, and asserts in BOTH light and dark mode:
   - documented text/background pairs meet WCAG AA (4.5:1 for normal text)
   - non-text indicators (functional borders, focus ring) meet WCAG 1.4.11 (3:1)
+  - paper text on feedback deep fills meets 4.5:1
 
 Usage:  python3 tools/check-contrast.py
 Exit 0 when every pair passes, 1 otherwise.
@@ -26,6 +27,7 @@ PAIRS = [
     # Text-bearing accent fills (buttons, badges)
     ("paper on sage-deep", "paper",         "sage-deep", 4.5),
     ("paper on rust-deep", "paper",         "rust-deep", 4.5),
+    ("ink on sand",        "ink",           "sand",      4.5),  # neutral badge
     # Stone's documented role: paired with dark, never light text on light bg
     ("ink on stone",       "ink",           "stone",   4.5),
     ("stone on ink",       "stone",         "ink",     4.5),
@@ -36,6 +38,12 @@ PAIRS = [
     ("focus ring on surface",    "focus-color",   "surface", 3.0),
 ]
 
+# Feedback deep fills behind paper text (badges, banners) - both modes.
+FEEDBACK_PAIRS = [
+    (f"paper on {name}-deep", "paper", f"{name}-deep", 4.5)
+    for name in ("success", "warning", "danger", "info")
+]
+
 
 def load_tokens():
     data = json.loads(TOKENS_JSON.read_text())
@@ -43,11 +51,24 @@ def load_tokens():
     for category, group in data.items():
         if category.startswith("$") or not isinstance(group, dict):
             continue
+        if category == "modes":
+            continue
         for name, token in group.items():
             if name.startswith("$"):
                 continue
             flat[name] = (category, token["$value"])
-    return flat
+    dark = {}
+    for category, group in data["modes"]["dark"].items():
+        if category.startswith("$"):
+            continue
+        for name, token in group.items():
+            if name not in flat or flat[name][0] != category:
+                raise SystemExit(f"modes.dark: unknown token '{category}.{name}'")
+            if not isinstance(token, dict) or "$value" not in token:
+                raise SystemExit(
+                    f"modes.dark: '{name}' must be an object with a $value")
+            dark[name] = (category, token["$value"])
+    return flat, dark
 
 
 def resolve(flat, value):
@@ -84,31 +105,43 @@ def ratio(fg, bg):
     return (lighter + 0.05) / (darker + 0.05)
 
 
-def main():
-    flat = load_tokens()
-    needed = {name for _, fg, bg, _ in PAIRS for name in (fg, bg)}
+def check_mode(label, flat, pairs):
+    needed = {name for _, fg, bg, _ in pairs for name in (fg, bg)}
     tokens = {name: resolve(flat, flat[name][1]) for name in needed}
 
     failures = 0
+    print(f"== {label} ==")
     print(f"{'pair':<24}{'fg':<10}{'bg':<10}{'ratio':<8}min   result")
     print("-" * 66)
-    for label, fg_name, bg_name, minimum in PAIRS:
+    for plabel, fg_name, bg_name, minimum in pairs:
         try:
             fg, bg = tokens[fg_name], tokens[bg_name]
         except KeyError as e:
-            print(f"{label:<24}{'--':<10}{'--':<10}{'--':<8}{minimum}  MISSING TOKEN {e}")
+            print(f"{plabel:<24}{'--':<10}{'--':<10}{'--':<8}{minimum}  MISSING TOKEN {e}")
             failures += 1
             continue
         r = ratio(fg, bg)
         ok = r >= minimum
         failures += not ok
-        print(f"{label:<24}{fg:<10}{bg:<10}{r:<8.2f}{minimum}  {'PASS' if ok else 'FAIL'}")
-
+        print(f"{plabel:<24}{fg:<10}{bg:<10}{r:<8.2f}{minimum}  {'PASS' if ok else 'FAIL'}")
     print("-" * 66)
+    return failures
+
+
+def main():
+    flat, dark = load_tokens()
+    dark_flat = {**flat, **dark}
+    pairs = PAIRS + FEEDBACK_PAIRS
+
+    failures = 0
+    failures += check_mode("light", flat, pairs)
+    print()
+    failures += check_mode("dark", dark_flat, pairs)
+    print()
     if failures:
         print(f"{failures} pair(s) below their minimum.")
         return 1
-    print("All pairs pass (4.5:1 text, 3:1 non-text).")
+    print("All pairs pass in both modes (4.5:1 text, 3:1 non-text).")
     return 0
 
 

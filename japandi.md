@@ -27,6 +27,26 @@ are the fallback.
   Wherever a border conveys a boundary - inputs, checkboxes, anything the eye
   must find - use `border-strong` `#878177` (3.5:1, WCAG non-text). Prefer
   spacing over borders; use a border only when separation by space fails.
+- Feedback states are functional, never accents: success `#7C8B6C`, warning
+  `#A8874F`, danger `#A4695B`, info `#8B8574`. Text on a feedback fill must
+  use the deep variant (`success-deep` `#5C6B4E`, `warning-deep` `#7E5F2C`,
+  `danger-deep` `#8C4A3C`, `info-deep` `#615C4E` behind paper text). Base
+  feedback colors are decorative only with text.
+
+## Dark mode
+
+- Dark mode is a warm charcoal inversion, never pure black: page background
+  `#221E18`, raised surfaces `#2B261E`, text `#EFE8D8`. Trigger it with
+  `data-theme="dark"` on `<html>`; `tokens.css` and `tailwind.v4.css` flip
+  every color and shadow automatically.
+- Every documented pairing holds in both modes: text pairings pass WCAG AA
+  (4.5:1), borders and focus pass 3:1, verified by
+  `tools/check-contrast.py`. Do not invent dark-only colors - if a new color
+  is needed, add it to `tokens.json` with a dark value.
+- Shadows deepen in dark mode (`rgba(12,10,8,0.30-0.40)`) so elevation still
+  reads on charcoal.
+- The Tailwind v3 preset is light-only (its colors are literals so opacity
+  modifiers work). Dark mode in a v3 project goes through the CSS variables.
 
 ## Whitespace philosophy
 
@@ -74,6 +94,9 @@ are the fallback.
 
 ## Components
 
+Concrete implementations live in `recipes.css` - use them as the starting
+point rather than restyling from scratch:
+
 - Cards: surface background, radius 8px, `shadow-sm` or a 1px border - not
   both. Padding `space-6` to `space-8`.
 - Buttons: primary is sage-deep fill with paper text (5.2:1), radius 8px.
@@ -82,6 +105,10 @@ are the fallback.
 - Inputs: surface or paper background, 1px `border-strong`, radius 4-8px,
   focus ring 2px solid ink (`#2C2823`) with 2px offset. On dark fills, ring
   paper-inside-ink: 2px paper ring, then 2px ink ring outside it.
+- Badges: pill shape, `text-xs` semibold, deep fills with paper text
+  (`sage-deep` default; `success-deep`, `warning-deep`, `danger-deep`,
+  `info-deep` for states). Pill shapes are reserved for these small tags -
+  never pill buttons or cards.
 - Icons: thin stroke (1.5px), ink or ink-soft color, no filled multicolor icons.
   Stone is too light for icons on light backgrounds (2.4:1).
 

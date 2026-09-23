@@ -14,6 +14,9 @@
      z-100, outline-2, outline-offset-2.
    - --ease-out and --ease-in-out intentionally override Tailwind's defaults
      with this system's quieter curves.
+   - Dark mode: set data-theme="dark" on <html>; the override block at the
+     end flips every color and shadow variable. (The v3 preset is light-only:
+     its colors are literals so opacity modifiers keep working.)
    ========================================================================== */
 
 @theme {
@@ -37,6 +40,16 @@
   /* Color: borders */
   --color-border            : #E2DACB;
   --color-border-strong     : #878177;
+
+  /* Feedback (functional states, muted - deep variants are text-bearing) */
+  --color-success           : #7C8B6C;
+  --color-success-deep      : #5C6B4E;
+  --color-warning           : #A8874F;
+  --color-warning-deep      : #7E5F2C;
+  --color-danger            : #A4695B;
+  --color-danger-deep       : #8C4A3C;
+  --color-info              : #8B8574;
+  --color-info-deep         : #615C4E;
 
   /* Typography */
   --font-sans               : "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -76,4 +89,42 @@
 
   /* Focus (visible indicator, 3:1 minimum against adjacent colors) */
   --color-focus             : var(--color-ink);
+}
+
+[data-theme="dark"] {
+  /* Color: neutrals (warm, never pure) */
+  --color-paper             : #221E18;
+  --color-surface           : #2B261E;
+  --color-sand              : #38322A;
+  --color-clay              : #4A4238;
+  --color-stone             : #6E6250;
+
+  /* Color: ink (soft warm black, never #000) */
+  --color-ink               : #EFE8D8;
+  --color-ink-soft          : #B7AB94;
+
+  /* Color: accents (muted, one per view) */
+  --color-sage              : #8E9783;
+  --color-sage-deep         : #9FA98F;
+  --color-rust              : #C08B66;
+  --color-rust-deep         : #BE8A63;
+
+  /* Color: borders */
+  --color-border            : #3A342A;
+  --color-border-strong     : #857A64;
+
+  /* Feedback (functional states, muted - deep variants are text-bearing) */
+  --color-success           : #75855F;
+  --color-success-deep      : #9DAD8D;
+  --color-warning           : #8F7440;
+  --color-warning-deep      : #B99B58;
+  --color-danger            : #96604C;
+  --color-danger-deep       : #BC7F6B;
+  --color-info              : #7A7462;
+  --color-info-deep         : #A29B86;
+
+  /* Shadows (soft, warm-tinted, low opacity) */
+  --shadow-sm               : 0 1px 2px rgba(12, 10, 8, 0.30);
+  --shadow-md               : 0 4px 12px rgba(12, 10, 8, 0.35);
+  --shadow-lg               : 0 12px 32px rgba(12, 10, 8, 0.40);
 }
