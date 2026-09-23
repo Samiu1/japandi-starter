@@ -19,15 +19,22 @@
   --jpd-surface:    #FBF9F4;  /* raised surfaces: cards, panels */
   --jpd-sand:       #E9E2D3;  /* subtle fills, hairline borders */
   --jpd-clay:       #D3C6B0;  /* deeper neutral, quiet emphasis */
-  --jpd-stone:      #A79C89;  /* muted mid-tone: icons, meta text on dark */
+  --jpd-stone:      #A79C89;  /* muted mid-tone for large washes and dark-mode
+                                   pairings - never light text on it (2.4:1) */
 
   /* ---- Color: ink (soft warm black, never #000) ---- */
   --jpd-ink:        #2C2823;  /* primary text */
   --jpd-ink-soft:   #6B6357;  /* secondary text, captions */
 
   /* ---- Color: accents (muted, one per view) ---- */
-  --jpd-sage:       #7C8471;  /* primary accent - desaturated green */
-  --jpd-rust:       #B0795B;  /* warm accent - muted terracotta, use sparingly */
+  --jpd-sage:       #7C8471;  /* primary accent - desaturated green.
+                                 Decorative use only with text (3.5:1). */
+  --jpd-sage-deep:  #62685A;  /* text-bearing sage: fills behind paper text,
+                                 e.g. primary buttons (5.2:1, WCAG AA) */
+  --jpd-rust:       #B0795B;  /* warm accent - muted terracotta, use sparingly.
+                                 Decorative use only with text (3.3:1). */
+  --jpd-rust-deep:  #8A5A3E;  /* text-bearing rust: fills behind paper text
+                                 (5.2:1, WCAG AA) */
   --jpd-border:     #E2DACB;  /* default hairline border */
 
   /* ---- Typography ---- */
@@ -87,16 +94,18 @@
   .lede { color: var(--jpd-ink-soft); font-size: var(--jpd-text-lg); margin: 0 0 var(--jpd-space-12); }
   section { margin-bottom: var(--jpd-space-16); }
   .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--jpd-space-3); }
-  .swatch { border-radius: var(--jpd-radius-md); padding: var(--jpd-space-4) var(--jpd-space-3); font-size: var(--jpd-text-xs); border: 1px solid var(--jpd-border); }
+  .swatch { border-radius: var(--jpd-radius-md); overflow: hidden; font-size: var(--jpd-text-xs); border: 1px solid var(--jpd-border); background: var(--jpd-paper); }
+  .swatch .chip { height: 3rem; }
+  .swatch .caption { padding: var(--jpd-space-2) var(--jpd-space-3); }
   .swatch .name { font-weight: 600; }
   .card { background: var(--jpd-surface); border-radius: var(--jpd-radius-md); box-shadow: var(--jpd-shadow-sm); padding: var(--jpd-space-8); margin-bottom: var(--jpd-space-6); }
   .card p { color: var(--jpd-ink-soft); margin: 0; }
-  .card .label { font-size: var(--jpd-text-xs); font-weight: 600; color: var(--jpd-stone); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 var(--jpd-space-2); }
+  .card .label { font-size: var(--jpd-text-xs); font-weight: 600; color: var(--jpd-ink-soft); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 var(--jpd-space-2); }
   .btn { display: inline-block; border-radius: var(--jpd-radius-md); padding: var(--jpd-space-3) var(--jpd-space-6); font-size: var(--jpd-text-base); border: none; cursor: pointer; margin-right: var(--jpd-space-3); }
-  .btn-primary { background: var(--jpd-sage); color: var(--jpd-paper); }
+  .btn-primary { background: var(--jpd-sage-deep); color: var(--jpd-paper); }
   .btn-secondary { background: transparent; border: 1px solid var(--jpd-border); color: var(--jpd-ink); }
   .type-row { margin-bottom: var(--jpd-space-4); }
-  .type-row .meta { font-size: var(--jpd-text-xs); color: var(--jpd-stone); }
+  .type-row .meta { font-size: var(--jpd-text-xs); color: var(--jpd-ink-soft); }
 </style>
 </head>
 <body>
@@ -109,14 +118,16 @@
   <section>
     <h2>Palette</h2>
     <div class="swatches">
-      <div class="swatch" style="background: var(--jpd-paper)"><div class="name">paper</div>#F6F3EC</div>
-      <div class="swatch" style="background: var(--jpd-surface)"><div class="name">surface</div>#FBF9F4</div>
-      <div class="swatch" style="background: var(--jpd-sand)"><div class="name">sand</div>#E9E2D3</div>
-      <div class="swatch" style="background: var(--jpd-clay)"><div class="name">clay</div>#D3C6B0</div>
-      <div class="swatch" style="background: var(--jpd-stone); color: var(--jpd-paper)"><div class="name">stone</div>#A79C89</div>
-      <div class="swatch" style="background: var(--jpd-ink); color: var(--jpd-paper)"><div class="name">ink</div>#2C2823</div>
-      <div class="swatch" style="background: var(--jpd-sage); color: var(--jpd-paper)"><div class="name">sage</div>#7C8471</div>
-      <div class="swatch" style="background: var(--jpd-rust); color: var(--jpd-paper)"><div class="name">rust</div>#B0795B</div>
+      <div class="swatch"><div class="chip" style="background: var(--jpd-paper)"></div><div class="caption"><div class="name">paper</div>#F6F3EC</div></div>
+      <div class="swatch"><div class="chip" style="background: var(--jpd-surface)"></div><div class="caption"><div class="name">surface</div>#FBF9F4</div></div>
+      <div class="swatch"><div class="chip" style="background: var(--jpd-sand)"></div><div class="caption"><div class="name">sand</div>#E9E2D3</div></div>
+      <div class="swatch"><div class="chip" style="background: var(--jpd-clay)"></div><div class="caption"><div class="name">clay</div>#D3C6B0</div></div>
+      <div class="swatch"><div class="chip" style="background: var(--jpd-stone)"></div><div class="caption"><div class="name">stone</div>#A79C89</div></div>
+      <div class="swatch"><div class="chip" style="background: var(--jpd-ink)"></div><div class="caption"><div class="name">ink</div>#2C2823</div></div>
+      <div class="swatch"><div class="chip" style="background: var(--jpd-sage)"></div><div class="caption"><div class="name">sage</div>#7C8471</div></div>
+      <div class="swatch"><div class="chip" style="background: var(--jpd-sage-deep)"></div><div class="caption"><div class="name">sage-deep</div>#62685A</div></div>
+      <div class="swatch"><div class="chip" style="background: var(--jpd-rust)"></div><div class="caption"><div class="name">rust</div>#B0795B</div></div>
+      <div class="swatch"><div class="chip" style="background: var(--jpd-rust-deep)"></div><div class="caption"><div class="name">rust-deep</div>#8A5A3E</div></div>
     </div>
   </section>
 

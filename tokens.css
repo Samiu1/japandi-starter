@@ -10,15 +10,22 @@
   --jpd-surface:    #FBF9F4;  /* raised surfaces: cards, panels */
   --jpd-sand:       #E9E2D3;  /* subtle fills, hairline borders */
   --jpd-clay:       #D3C6B0;  /* deeper neutral, quiet emphasis */
-  --jpd-stone:      #A79C89;  /* muted mid-tone: icons, meta text on dark */
+  --jpd-stone:      #A79C89;  /* muted mid-tone for large washes and dark-mode
+                                   pairings - never light text on it (2.4:1) */
 
   /* ---- Color: ink (soft warm black, never #000) ---- */
   --jpd-ink:        #2C2823;  /* primary text */
   --jpd-ink-soft:   #6B6357;  /* secondary text, captions */
 
   /* ---- Color: accents (muted, one per view) ---- */
-  --jpd-sage:       #7C8471;  /* primary accent - desaturated green */
-  --jpd-rust:       #B0795B;  /* warm accent - muted terracotta, use sparingly */
+  --jpd-sage:       #7C8471;  /* primary accent - desaturated green.
+                                 Decorative use only with text (3.5:1). */
+  --jpd-sage-deep:  #62685A;  /* text-bearing sage: fills behind paper text,
+                                 e.g. primary buttons (5.2:1, WCAG AA) */
+  --jpd-rust:       #B0795B;  /* warm accent - muted terracotta, use sparingly.
+                                 Decorative use only with text (3.3:1). */
+  --jpd-rust-deep:  #8A5A3E;  /* text-bearing rust: fills behind paper text
+                                 (5.2:1, WCAG AA) */
   --jpd-border:     #E2DACB;  /* default hairline border */
 
   /* ---- Typography ---- */

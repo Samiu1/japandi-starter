@@ -18,6 +18,9 @@ those tokens over the literal values below. The values here are the fallback.
 - One accent per view. Default accent is sage `#7C8471`. Rust `#B0795B` is the
   warm alternative for rare emphasis. Never use both at full strength in one
   screen, and never invent a third accent.
+- Text on an accent fill must use the deep variant: `sage-deep` `#62685A`
+  or `rust-deep` `#8A5A3E` behind paper text. Base sage/rust are decorative
+  only with text (3.5:1 / 3.3:1 - below AA).
 - Borders are hairlines: 1px, `#E2DACB`. Prefer spacing over borders; use a
   border only when separation by space fails.
 
@@ -43,8 +46,11 @@ those tokens over the literal values below. The values here are the fallback.
 
 ## Texture and contrast
 
-- Everything is matte and muted. Contrast is quiet: text passes WCAG AA, but
-  nothing shouts.
+- Everything is matte and muted. Contrast is quiet: text pairings pass
+  WCAG AA (4.5:1), but nothing shouts. Verified by `tools/check-contrast.py`.
+- Text-safe pairings: ink or ink-soft on paper/surface; paper on sage-deep
+  or rust-deep; ink on stone, or stone on ink. Base sage, rust, and stone
+  are decorative only - never put small text on them over a light background.
 - Natural textures belong: wood, linen, paper, stone. In code that translates
   to warm solid fills and subtle tone-on-tone layering, not gradients.
 - Elevation is soft: warm-tinted shadows at 5-8% opacity
@@ -54,12 +60,13 @@ those tokens over the literal values below. The values here are the fallback.
 
 - Cards: surface background, radius 8px, `shadow-sm` or a 1px border - not
   both. Padding `space-6` to `space-8`.
-- Buttons: primary is sage fill with paper text, radius 8px. Secondary is
-  transparent with a 1px border and ink text. No pill buttons except small
-  tags/badges.
+- Buttons: primary is sage-deep fill with paper text (5.2:1), radius 8px.
+  Secondary is transparent with a 1px border and ink text. No pill buttons
+  except small tags/badges.
 - Inputs: surface or paper background, 1px border, radius 4-8px, focus ring in
   sage at low opacity.
-- Icons: thin stroke (1.5px), ink or stone color, no filled multicolor icons.
+- Icons: thin stroke (1.5px), ink or ink-soft color, no filled multicolor icons.
+  Stone is too light for icons on light backgrounds (2.4:1).
 
 ## What to avoid
 

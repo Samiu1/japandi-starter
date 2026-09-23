@@ -6,7 +6,7 @@
  *   // tailwind.config.js
  *   module.exports = {
  *     presets: [require('./tailwind.preset.js')],
- *     content: ['./src/**/*.{html,js,jsx,ts,tsx,vue,svelte}'],
+ *     content: ['./src/*.{html,js,jsx,ts,tsx,vue,svelte}'],
  *   }
  *
  * Colors are literal values (not var() references) so opacity modifiers
@@ -28,8 +28,14 @@ module.exports = {
           DEFAULT: '#2C2823',
           soft:    '#6B6357',
         },
-        sage:    '#7C8471',
-        rust:    '#B0795B',
+        sage: {
+          DEFAULT: '#7C8471',
+          deep:    '#62685A',
+        },
+        rust: {
+          DEFAULT: '#B0795B',
+          deep:    '#8A5A3E',
+        },
         border:  '#E2DACB',
       },
       fontFamily: {
