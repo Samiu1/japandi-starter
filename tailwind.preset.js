@@ -1,6 +1,8 @@
 /**
  * japandi-starter - Tailwind preset
- * Consumes the same palette/scale as tokens.css.
+ * Consumes the same tokens as tokens.json.
+ * GENERATED - do not edit by hand. Edit tokens.json, then run:
+ *   python3 tools/build-tokens.py
  *
  * Usage:
  *   // tailwind.config.js
@@ -10,8 +12,7 @@
  *   }
  *
  * Colors are literal values (not var() references) so opacity modifiers
- * like bg-sage/50 keep working. If you edit tokens.css, mirror the change
- * here - the hex values are the single source of truth duplicated on purpose.
+ * like bg-sage/50 keep working.
  */
 
 /** @type {import('tailwindcss').Config} */
@@ -19,37 +20,40 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        paper:   '#F6F3EC',
+        paper  : '#F6F3EC',
         surface: '#FBF9F4',
-        sand:    '#E9E2D3',
-        clay:    '#D3C6B0',
-        stone:   '#A79C89',
-        ink: {
+        sand   : '#E9E2D3',
+        clay   : '#D3C6B0',
+        stone  : '#A79C89',
+        ink    : {
           DEFAULT: '#2C2823',
-          soft:    '#6B6357',
+          soft   : '#6B6357',
         },
-        sage: {
+        sage   : {
           DEFAULT: '#7C8471',
-          deep:    '#62685A',
+          deep   : '#62685A',
         },
-        rust: {
+        rust   : {
           DEFAULT: '#B0795B',
-          deep:    '#8A5A3E',
+          deep   : '#8A5A3E',
         },
-        border:  '#E2DACB',
+        border : {
+          DEFAULT: '#E2DACB',
+          strong : '#878177',
+        },
       },
       fontFamily: {
-        sans:  ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        sans : ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
         serif: ['Fraunces', 'Newsreader', 'Georgia', 'serif'],
       },
       fontSize: {
-        xs:   ['0.8rem',   { lineHeight: '1.6' }],
-        sm:   ['0.889rem', { lineHeight: '1.6' }],
-        base: ['1rem',     { lineHeight: '1.6' }],
-        lg:   ['1.25rem',  { lineHeight: '1.2', letterSpacing: '-0.01em' }],
-        xl:   ['1.563rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
-        '2xl':['1.953rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
-        '3xl':['2.441rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+        xs  : ['0.8rem', { lineHeight: '1.6' }],
+        sm  : ['0.889rem', { lineHeight: '1.6' }],
+        base: ['1rem', { lineHeight: '1.6' }],
+        lg  : ['1.25rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+        xl  : ['1.563rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+        '2xl': ['1.953rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+        '3xl': ['2.441rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
       },
       borderRadius: {
         sm: '4px',

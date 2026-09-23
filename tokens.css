@@ -1,69 +1,88 @@
 /* ==========================================================================
    japandi-starter - design tokens
    Warm, quiet, natural. Japanese restraint meets Scandinavian warmth.
-   Source of truth: every other file in this repo consumes these variables.
+   GENERATED from tokens.json - do not edit by hand.
+   Edit tokens.json, then run: python3 tools/build-tokens.py
    ========================================================================== */
 
 :root {
   /* ---- Color: neutrals (warm, never pure) ---- */
-  --jpd-paper:      #F6F3EC;  /* page background - warm white, not #FFF */
-  --jpd-surface:    #FBF9F4;  /* raised surfaces: cards, panels */
-  --jpd-sand:       #E9E2D3;  /* subtle fills, hairline borders */
-  --jpd-clay:       #D3C6B0;  /* deeper neutral, quiet emphasis */
-  --jpd-stone:      #A79C89;  /* muted mid-tone for large washes and dark-mode
-                                   pairings - never light text on it (2.4:1) */
+  --jpd-paper:            #F6F3EC;  /* page background - warm white, not #FFF */
+  --jpd-surface:          #FBF9F4;  /* raised surfaces: cards, panels */
+  --jpd-sand:             #E9E2D3;  /* subtle fills, hairline borders */
+  --jpd-clay:             #D3C6B0;  /* deeper neutral, quiet emphasis */
+  --jpd-stone:            #A79C89;  /* muted mid-tone for large washes and dark-mode
+                                       pairings - never light text on it (2.4:1) */
 
   /* ---- Color: ink (soft warm black, never #000) ---- */
-  --jpd-ink:        #2C2823;  /* primary text */
-  --jpd-ink-soft:   #6B6357;  /* secondary text, captions */
+  --jpd-ink:              #2C2823;  /* primary text */
+  --jpd-ink-soft:         #6B6357;  /* secondary text, captions */
 
   /* ---- Color: accents (muted, one per view) ---- */
-  --jpd-sage:       #7C8471;  /* primary accent - desaturated green.
-                                 Decorative use only with text (3.5:1). */
-  --jpd-sage-deep:  #62685A;  /* text-bearing sage: fills behind paper text,
-                                 e.g. primary buttons (5.2:1, WCAG AA) */
-  --jpd-rust:       #B0795B;  /* warm accent - muted terracotta, use sparingly.
-                                 Decorative use only with text (3.3:1). */
-  --jpd-rust-deep:  #8A5A3E;  /* text-bearing rust: fills behind paper text
-                                 (5.2:1, WCAG AA) */
-  --jpd-border:     #E2DACB;  /* default hairline border */
+  --jpd-sage:             #7C8471;  /* primary accent - desaturated green.
+                                       Decorative use only with text (3.5:1). */
+  --jpd-sage-deep:        #62685A;  /* text-bearing sage: fills behind paper text,
+                                       e.g. primary buttons (5.2:1, WCAG AA) */
+  --jpd-rust:             #B0795B;  /* warm accent - muted terracotta, use sparingly.
+                                       Decorative use only with text (3.3:1). */
+  --jpd-rust-deep:        #8A5A3E;  /* text-bearing rust: fills behind paper text
+                                       (5.2:1, WCAG AA) */
+
+  /* ---- Color: borders ---- */
+  --jpd-border:           #E2DACB;  /* default hairline border - decorative dividers only (1.3:1 on paper) */
+  --jpd-border-strong:    #878177;  /* functional borders that convey a boundary, e.g. inputs (3.5:1 on paper, WCAG non-text) */
 
   /* ---- Typography ---- */
-  --jpd-font-sans:  "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --jpd-font-serif: "Fraunces", "Newsreader", Georgia, serif; /* display only */
-
-  --jpd-text-xs:    0.8rem;    /* 12.8px */
-  --jpd-text-sm:    0.889rem;  /* 14.2px */
-  --jpd-text-base:  1rem;      /* 16px */
-  --jpd-text-lg:    1.25rem;   /* 20px */
-  --jpd-text-xl:    1.563rem;  /* 25px */
-  --jpd-text-2xl:   1.953rem;  /* 31.3px */
-  --jpd-text-3xl:   2.441rem;  /* 39.1px */
-
-  --jpd-leading-body:    1.6;
-  --jpd-leading-heading: 1.2;
-
-  --jpd-tracking-heading: -0.01em;
+  --jpd-font-sans:        "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;  /* UI and body */
+  --jpd-font-serif:       "Fraunces", "Newsreader", Georgia, serif;  /* display headings only */
+  --jpd-text-xs:          0.8rem;  /* 12.8px */
+  --jpd-text-sm:          0.889rem;  /* 14.2px */
+  --jpd-text-base:        1rem;  /* 16px */
+  --jpd-text-lg:          1.25rem;  /* 20px */
+  --jpd-text-xl:          1.563rem;  /* 25px */
+  --jpd-text-2xl:         1.953rem;  /* 31.3px */
+  --jpd-text-3xl:         2.441rem;  /* 39.1px */
+  --jpd-leading-body:     1.6;  /* body line-height */
+  --jpd-leading-heading:  1.2;  /* heading line-height */
+  --jpd-tracking-heading: -0.01em;  /* heading letter-spacing */
 
   /* ---- Spacing (4px base) ---- */
-  --jpd-space-1:  0.25rem;
-  --jpd-space-2:  0.5rem;
-  --jpd-space-3:  0.75rem;
-  --jpd-space-4:  1rem;
-  --jpd-space-6:  1.5rem;
-  --jpd-space-8:  2rem;
-  --jpd-space-12: 3rem;
-  --jpd-space-16: 4rem;
-  --jpd-space-24: 6rem;
+  --jpd-space-1:          0.25rem;
+  --jpd-space-2:          0.5rem;
+  --jpd-space-3:          0.75rem;
+  --jpd-space-4:          1rem;
+  --jpd-space-6:          1.5rem;
+  --jpd-space-8:          2rem;
+  --jpd-space-12:         3rem;
+  --jpd-space-16:         4rem;
+  --jpd-space-24:         6rem;
 
   /* ---- Radii (subtle rounding, nothing bubbly) ---- */
-  --jpd-radius-sm: 4px;
-  --jpd-radius-md: 8px;
-  --jpd-radius-lg: 16px;
-  --jpd-radius-full: 9999px;
+  --jpd-radius-sm:        4px;
+  --jpd-radius-md:        8px;
+  --jpd-radius-lg:        16px;
+  --jpd-radius-full:      9999px;
 
   /* ---- Shadows (soft, warm-tinted, low opacity) ---- */
-  --jpd-shadow-sm: 0 1px 2px rgba(44, 40, 35, 0.05);
-  --jpd-shadow-md: 0 4px 12px rgba(44, 40, 35, 0.06);
-  --jpd-shadow-lg: 0 12px 32px rgba(44, 40, 35, 0.08);
+  --jpd-shadow-sm:        0 1px 2px rgba(44, 40, 35, 0.05);
+  --jpd-shadow-md:        0 4px 12px rgba(44, 40, 35, 0.06);
+  --jpd-shadow-lg:        0 12px 32px rgba(44, 40, 35, 0.08);
+
+  /* ---- Motion (quiet, never bouncy) ---- */
+  --jpd-duration-fast:    150ms;  /* micro-interactions: hovers, toggles */
+  --jpd-duration-base:    250ms;  /* standard transitions */
+  --jpd-duration-slow:    400ms;  /* deliberate movement: panels, overlays */
+  --jpd-ease-out:         cubic-bezier(0.25, 1, 0.5, 1);  /* entrances - settles softly */
+  --jpd-ease-in-out:      cubic-bezier(0.65, 0, 0.35, 1);  /* exits and state changes */
+
+  /* ---- Z-index (flat layouts first - reach for these only when layering) ---- */
+  --jpd-z-sticky:         100;  /* sticky headers */
+  --jpd-z-overlay:        200;  /* dimming overlays */
+  --jpd-z-modal:          300;  /* dialogs, drawers */
+  --jpd-z-toast:          400;  /* toasts, always on top */
+
+  /* ---- Focus (visible indicator, 3:1 minimum against adjacent colors) ---- */
+  --jpd-focus-width:      2px;  /* focus ring thickness */
+  --jpd-focus-offset:     2px;  /* gap between component and ring */
+  --jpd-focus-color:      var(--jpd-ink);  /* alias of ink - 13.2:1 on paper, 13.9:1 on surface */
 }

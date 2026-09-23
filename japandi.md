@@ -4,8 +4,10 @@ Drop this file into the context of Claude Code, Antigravity, Cursor, or any AI
 coding tool when generating frontend. It steers every generation toward one
 look: warm, quiet, natural. Japanese restraint, Scandinavian warmth.
 
-If the project uses `tokens.css` or the Tailwind preset from this repo, prefer
-those tokens over the literal values below. The values here are the fallback.
+If the project uses `tokens.json` from this repo, it is the source of truth -
+prefer it over everything below. `tokens.css` and the Tailwind preset are
+generated from it (`python3 tools/build-tokens.py`); the literal values here
+are the fallback.
 
 ## Palette rules
 
@@ -21,8 +23,10 @@ those tokens over the literal values below. The values here are the fallback.
 - Text on an accent fill must use the deep variant: `sage-deep` `#62685A`
   or `rust-deep` `#8A5A3E` behind paper text. Base sage/rust are decorative
   only with text (3.5:1 / 3.3:1 - below AA).
-- Borders are hairlines: 1px, `#E2DACB`. Prefer spacing over borders; use a
-  border only when separation by space fails.
+- Borders are hairlines: 1px, `#E2DACB` for decorative dividers only (1.3:1).
+  Wherever a border conveys a boundary - inputs, checkboxes, anything the eye
+  must find - use `border-strong` `#878177` (3.5:1, WCAG non-text). Prefer
+  spacing over borders; use a border only when separation by space fails.
 
 ## Whitespace philosophy
 
@@ -51,10 +55,22 @@ those tokens over the literal values below. The values here are the fallback.
 - Text-safe pairings: ink or ink-soft on paper/surface; paper on sage-deep
   or rust-deep; ink on stone, or stone on ink. Base sage, rust, and stone
   are decorative only - never put small text on them over a light background.
+- Non-text indicators pass 3:1: `border-strong` on paper/surface, and the
+  ink focus ring on paper/surface. Verified by `tools/check-contrast.py`.
 - Natural textures belong: wood, linen, paper, stone. In code that translates
   to warm solid fills and subtle tone-on-tone layering, not gradients.
 - Elevation is soft: warm-tinted shadows at 5-8% opacity
   (`rgba(44,40,35,0.05-0.08)`), small blur, no colored or harsh shadows.
+
+## Motion
+
+- Motion is quiet, never bouncy. Durations: 150ms for micro-interactions
+  (hovers, toggles), 250ms for standard transitions, 400ms for deliberate
+  movement (panels, overlays).
+- Entrances use ease-out (settles softly); exits and state changes use
+  ease-in-out. No spring physics, no elastic easing.
+- Respect `prefers-reduced-motion`: transitions that move content across the
+  screen should degrade to fades or instant changes.
 
 ## Components
 
@@ -63,8 +79,9 @@ those tokens over the literal values below. The values here are the fallback.
 - Buttons: primary is sage-deep fill with paper text (5.2:1), radius 8px.
   Secondary is transparent with a 1px border and ink text. No pill buttons
   except small tags/badges.
-- Inputs: surface or paper background, 1px border, radius 4-8px, focus ring in
-  sage at low opacity.
+- Inputs: surface or paper background, 1px `border-strong`, radius 4-8px,
+  focus ring 2px solid ink (`#2C2823`) with 2px offset. On dark fills, ring
+  paper-inside-ink: 2px paper ring, then 2px ink ring outside it.
 - Icons: thin stroke (1.5px), ink or ink-soft color, no filled multicolor icons.
   Stone is too light for icons on light backgrounds (2.4:1).
 
