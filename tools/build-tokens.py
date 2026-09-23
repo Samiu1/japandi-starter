@@ -15,8 +15,12 @@ Design decisions live in tokens.json. Presentational rules that live here:
     use leading-heading + tracking-heading.
   - The preset omits spacing and radius-full: both are identical to Tailwind's
     defaults, so emitting them would be noise.
-  - Motion, z-index and focus tokens are CSS-only for now; the Tailwind v4
-    @theme output will carry them later.
+  - Tailwind v4 theme (tailwind.v4.css): colors, fonts, type scale, radii,
+    shadows and easings map to @theme namespaces. Motion durations, z-index
+    and focus width/offset have no v4 theme namespace; v4 accepts them as
+    bare values (duration-250, z-100, outline-2), so they are documented
+    rather than emitted. Spacing and radius-full are omitted for the same
+    reason as in the preset.
 """
 import json
 import re
@@ -27,6 +31,7 @@ ROOT = Path(__file__).resolve().parent.parent
 TOKENS_JSON = ROOT / "tokens.json"
 TOKENS_CSS = ROOT / "tokens.css"
 PRESET_JS = ROOT / "tailwind.preset.js"
+V4_CSS = ROOT / "tailwind.v4.css"
 EXAMPLE_HTML = ROOT / "example" / "index.html"
 
 # Presentational order of categories in generated files.
@@ -233,6 +238,85 @@ def build_preset(flat, ordered):
     return "\n".join(lines)
 
 
+V4_BANNER = """/* ==========================================================================
+   japandi-starter - Tailwind v4 theme
+   Warm, quiet, natural. Japanese restraint meets Scandinavian warmth.
+   GENERATED from tokens.json - do not edit by hand.
+   Edit tokens.json, then run: python3 tools/build-tokens.py
+
+   Usage (Tailwind v4):
+     @import "tailwindcss";
+     @import "./tailwind.v4.css";
+
+   Notes:
+   - Duration, z-index, and focus width/offset tokens have no Tailwind v4
+     theme namespace; v4 accepts them as bare values instead: duration-250,
+     z-100, outline-2, outline-offset-2.
+   - --ease-out and --ease-in-out intentionally override Tailwind's defaults
+     with this system's quieter curves.
+   ========================================================================== */"""
+
+
+def v4_value(flat, name):
+    """Theme value for tailwind.v4.css: color aliases stay as var() refs."""
+    value = flat[name]["value"]
+    m = re.fullmatch(r"\{([\w-]+)\.([\w-]+)\}", value.strip())
+    if m and m.group(1) == "color":
+        return f"var(--color-{m.group(2)})"
+    return resolve_literal(flat, value)
+
+
+def v4_entries(flat, ordered):
+    """(section, var, value) triples for the @theme block, in order."""
+    entries = []
+    tmap = {n: flat[n]["value"] for c, _, n in ordered if c == "type"}
+    leading_body, leading_heading = tmap["leading-body"], tmap["leading-heading"]
+    tracking_heading = tmap["tracking-heading"]
+
+    for category, section_title, name in ordered:
+        value = v4_value(flat, name)
+        if category == "color":
+            entries.append((section_title, f"--color-{name}", value))
+        elif name == "focus-color":
+            # Semantic alias: used as outline-focus for focus rings.
+            entries.append((section_title, "--color-focus", value))
+        elif name in ("font-sans", "font-serif"):
+            entries.append((section_title, f"--font-{name.split('-', 1)[1]}", value))
+        elif name.startswith("text-"):
+            size = name.split("-", 1)[1]
+            entries.append((section_title, f"--text-{size}", value))
+            if size in ("xs", "sm", "base"):
+                entries.append((section_title, f"--text-{size}--line-height", leading_body))
+            else:
+                entries.append((section_title, f"--text-{size}--line-height", leading_heading))
+                entries.append((section_title, f"--text-{size}--letter-spacing", tracking_heading))
+        elif category == "radius" and name != "radius-full":
+            entries.append((section_title, f"--radius-{name.split('-', 1)[1]}", value))
+        elif category == "shadow":
+            entries.append((section_title, f"--shadow-{name.split('-', 1)[1]}", value))
+        elif name in ("ease-out", "ease-in-out"):
+            entries.append((section_title, f"--{name}", value))
+        # space-*: identical to v4 defaults, omitted (same as the v3 preset).
+        # duration-*, z-*, focus-width/offset: bare values in v4, not emitted.
+    return entries
+
+
+def build_v4_theme(flat, ordered):
+    entries = v4_entries(flat, ordered)
+    var_width = max(len(var) for _, var, _ in entries)
+    lines = [V4_BANNER, "", "@theme {"]
+    current_section = None
+    for section_title, var, value in entries:
+        if section_title != current_section:
+            if current_section is not None:
+                lines.append("")
+            lines.append(f"  /* {section_title} */")
+            current_section = section_title
+        lines.append(f"  {var.ljust(var_width)}: {value};")
+    lines.append("}")
+    return "\n".join(lines) + "\n"
+
+
 def build_example_html(root_block):
     html = EXAMPLE_HTML.read_text()
     pattern = re.compile(r"^:root \{$.*?^}", re.MULTILINE | re.DOTALL)
@@ -250,13 +334,16 @@ def main():
     root_block = build_root_block(flat, ordered)
     css_text = build_css(flat, ordered)
     preset_text = build_preset(flat, ordered)
+    v4_text = build_v4_theme(flat, ordered)
     example_html = build_example_html(root_block)
     TOKENS_CSS.write_text(css_text)
     PRESET_JS.write_text(preset_text)
+    V4_CSS.write_text(v4_text)
     EXAMPLE_HTML.write_text(example_html)
     print(f"tokens: {len(ordered)}")
     print(f"wrote {TOKENS_CSS.relative_to(ROOT)}")
     print(f"wrote {PRESET_JS.relative_to(ROOT)}")
+    print(f"wrote {V4_CSS.relative_to(ROOT)}")
     print(f"synced :root block in {EXAMPLE_HTML.relative_to(ROOT)}")
 
 

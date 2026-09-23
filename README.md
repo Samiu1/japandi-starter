@@ -12,7 +12,8 @@ the stack.
 ## The thesis
 
 Theme drift happens when every project re-decides its palette. This repo makes
-the decision once: one set of tokens, one Tailwind preset built on them, and a
+the decision once: one set of tokens, Tailwind presets built on them for v3
+and v4, and a
 style guide written in plain words that AI coding tools (Claude Code,
 Antigravity, Cursor) can follow on any stack. New project, same look.
 
@@ -21,10 +22,11 @@ Antigravity, Cursor) can follow on any stack. New project, same look.
 | File                        | What it is                                                                                                                                            | Use it when                                                                                |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | `tokens.json`             | Design tokens in DTCG-flavored JSON: palette, type, spacing, radii, shadows, motion, z-index, focus.**The source of truth - edit values here.** | Changing any token. Then run the generator.                                                |
-| `tools/build-tokens.py`   | Generator: reads`tokens.json`, writes `tokens.css`, `tailwind.preset.js`, and syncs the example's token block.                                  | After editing`tokens.json`: `python3 tools/build-tokens.py`.                           |
+| `tools/build-tokens.py`   | Generator: reads `tokens.json`, writes `tokens.css`, `tailwind.preset.js`, `tailwind.v4.css`, and syncs the example's token block. | After editing `tokens.json`: `python3 tools/build-tokens.py`.                           |
 | `tokens.css`              | Generated CSS custom properties. Do not edit by hand.                                                                                                 | Plain CSS, or any stack that can import a stylesheet.                                      |
-| `tailwind.preset.js`      | Generated Tailwind preset (v3) consuming the same tokens. Do not edit by hand.                                                                        | Tailwind projects -`presets: [require('./tailwind.preset.js')]`.                         |
-| `tools/check-contrast.py` | WCAG contrast assertions: 4.5:1 for text pairs, 3:1 for non-text (borders, focus). Reads`tokens.json`.                                              | CI or before committing token changes.                                                     |
+| `tailwind.preset.js`      | Generated Tailwind preset (v3) consuming the same tokens. Do not edit by hand.                                                                        | Tailwind v3 projects - `presets: [require('./tailwind.preset.js')]`.                     |
+| `tailwind.v4.css`         | Generated Tailwind v4 theme (`@theme`) consuming the same tokens. Do not edit by hand.                                                               | Tailwind v4 projects - `@import "./tailwind.v4.css";` after `@import "tailwindcss";`.    |
+| `tools/check-contrast.py` | WCAG contrast assertions: 4.5:1 for text pairs, 3:1 for non-text (borders, focus). Reads `tokens.json`.                                              | CI or before committing token changes.                                                     |
 | `japandi.md`              | The rules in words: palette, whitespace, typography, motion, components, what to avoid.                                                               | Drop it into an AI coding tool's context for any frontend task, on any stack or framework. |
 | `example/index.html`      | One page applying the tokens: palette, type scale, cards, buttons. Self-contained - the tokens are inlined by the generator.                          | A visual smoke test and a reference for how the pieces combine.                            |
 
@@ -32,7 +34,7 @@ Antigravity, Cursor) can follow on any stack. New project, same look.
 
 **Changing tokens (the maintainer workflow):** edit `tokens.json`, then run
 `python3 tools/build-tokens.py` to regenerate `tokens.css`,
-`tailwind.preset.js`, and the example's token block. Run
+`tailwind.preset.js`, `tailwind.v4.css`, and the example's token block. Run
 `python3 tools/check-contrast.py` to verify the contrast assertions still
 pass. Commit the JSON and all generated files together.
 
@@ -43,7 +45,7 @@ colors, spacing, and component style.
 **Plain CSS:** `@import './tokens.css';` then use the variables
 (`background: var(--jpd-paper)`).
 
-**Tailwind:** add the preset to `tailwind.config.js`:
+**Tailwind v3:** add the preset to `tailwind.config.js`:
 
 ```js
 module.exports = {
@@ -52,9 +54,18 @@ module.exports = {
 };
 ```
 
+**Tailwind v4:** import the theme in your CSS, after Tailwind itself:
+
+```css
+@import "tailwindcss";
+@import "./tailwind.v4.css";
+```
+
 Classes like `bg-paper`, `text-ink`, `text-ink-soft`, `bg-sage-deep`,
 `border-border`, `border-border-strong`, `rounded-md`, `shadow-md` are then
-available.
+available. Motion durations, z-index, and focus width/offset have no v4
+theme namespace - v4 accepts them as bare values (`duration-250`, `z-100`,
+`outline-2`, `outline-offset-2`), and the focus color is `outline-focus`.
 
 ## Viewing the example
 

@@ -1,0 +1,79 @@
+/* ==========================================================================
+   japandi-starter - Tailwind v4 theme
+   Warm, quiet, natural. Japanese restraint meets Scandinavian warmth.
+   GENERATED from tokens.json - do not edit by hand.
+   Edit tokens.json, then run: python3 tools/build-tokens.py
+
+   Usage (Tailwind v4):
+     @import "tailwindcss";
+     @import "./tailwind.v4.css";
+
+   Notes:
+   - Duration, z-index, and focus width/offset tokens have no Tailwind v4
+     theme namespace; v4 accepts them as bare values instead: duration-250,
+     z-100, outline-2, outline-offset-2.
+   - --ease-out and --ease-in-out intentionally override Tailwind's defaults
+     with this system's quieter curves.
+   ========================================================================== */
+
+@theme {
+  /* Color: neutrals (warm, never pure) */
+  --color-paper             : #F6F3EC;
+  --color-surface           : #FBF9F4;
+  --color-sand              : #E9E2D3;
+  --color-clay              : #D3C6B0;
+  --color-stone             : #A79C89;
+
+  /* Color: ink (soft warm black, never #000) */
+  --color-ink               : #2C2823;
+  --color-ink-soft          : #6B6357;
+
+  /* Color: accents (muted, one per view) */
+  --color-sage              : #7C8471;
+  --color-sage-deep         : #62685A;
+  --color-rust              : #B0795B;
+  --color-rust-deep         : #8A5A3E;
+
+  /* Color: borders */
+  --color-border            : #E2DACB;
+  --color-border-strong     : #878177;
+
+  /* Typography */
+  --font-sans               : "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif              : "Fraunces", "Newsreader", Georgia, serif;
+  --text-xs                 : 0.8rem;
+  --text-xs--line-height    : 1.6;
+  --text-sm                 : 0.889rem;
+  --text-sm--line-height    : 1.6;
+  --text-base               : 1rem;
+  --text-base--line-height  : 1.6;
+  --text-lg                 : 1.25rem;
+  --text-lg--line-height    : 1.2;
+  --text-lg--letter-spacing : -0.01em;
+  --text-xl                 : 1.563rem;
+  --text-xl--line-height    : 1.2;
+  --text-xl--letter-spacing : -0.01em;
+  --text-2xl                : 1.953rem;
+  --text-2xl--line-height   : 1.2;
+  --text-2xl--letter-spacing: -0.01em;
+  --text-3xl                : 2.441rem;
+  --text-3xl--line-height   : 1.2;
+  --text-3xl--letter-spacing: -0.01em;
+
+  /* Radii (subtle rounding, nothing bubbly) */
+  --radius-sm               : 4px;
+  --radius-md               : 8px;
+  --radius-lg               : 16px;
+
+  /* Shadows (soft, warm-tinted, low opacity) */
+  --shadow-sm               : 0 1px 2px rgba(44, 40, 35, 0.05);
+  --shadow-md               : 0 4px 12px rgba(44, 40, 35, 0.06);
+  --shadow-lg               : 0 12px 32px rgba(44, 40, 35, 0.08);
+
+  /* Motion (quiet, never bouncy) */
+  --ease-out                : cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out             : cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Focus (visible indicator, 3:1 minimum against adjacent colors) */
+  --color-focus             : var(--color-ink);
+}
